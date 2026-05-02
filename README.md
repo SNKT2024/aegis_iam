@@ -30,7 +30,7 @@ This project follows the **Controller-Service-Repository (CSR) Pattern** to ensu
 
 ## Tech Stack
 
-- **Runtime:** Node.js & Express – Selected for high-performance, non-blocking I/O ideal for auth services.
+- **Runtime:** Node.js & Express with TypeScript – Selected for high-performance, non-blocking I/O ideal for auth services.
 
 - **Database:** PostgreSQL – Used for its relational integrity and robust support for complex identity schemas.
 
