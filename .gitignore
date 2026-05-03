@@ -54,3 +54,5 @@ uploads/
 public/uploads/
 *.sqlite
 *.sqlite3
+
+/src/generated/prisma

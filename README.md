@@ -110,7 +110,7 @@ erDiagram
 
 [x] Architecture Design & Schema Planning
 
-[ ] Database Connection & Migration Setup
+[x] Database Connection & Migration Setup
 
 [ ] Core Authentication (Register/Login Logic)
 
