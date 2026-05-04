@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import { AppError } from "./utils/appError";
 import { globalErrorHandler } from "./middleware/errorMiddleware";
+import authRouter from "./routes/auth.routes";
 
 const app: Application = express();
 
@@ -30,6 +31,8 @@ app.get("/error-test", (req, res, next) => {
 app.get("/health", (req: Request, res: Response) => {
   res.status(200).json({ status: "UP", message: "Aegis IAM is running" });
 });
+
+app.use("/api/v1/auth", authRouter);
 
 // 404 Route - Catch all undefined routes
 app.all("/*path", (req: Request, res: Response, next: NextFunction) => {
