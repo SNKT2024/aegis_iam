@@ -36,6 +36,7 @@ export async function registerUser(email: string, password: string) {
     });
 
     const newUser = {
+      userId: addUser.id,
       email: addUser.email,
       role: role.name,
     };
