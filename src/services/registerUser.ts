@@ -21,24 +21,26 @@ export async function registerUser(email: string, password: string) {
     // add user to db
     const addUser = await tx.user.create({
       data: { email: email, passwordHash: hashPassword },
+      include: { roles: { include: { role: true } } },
     });
 
     //get role
-    const role = await tx.role.findUnique({ where: { name: "user" } });
+    const findRoles = await tx.role.findUnique({ where: { name: "user" } });
+    const roles = addUser.roles.map((role) => role.role.name);
 
-    if (!role) {
+    if (!findRoles) {
       throw new AppError("Role Not Found", 404);
     }
 
     // link user to role
     await tx.userRole.create({
-      data: { userId: addUser.id, roleId: role.id },
+      data: { userId: addUser.id, roleId: findRoles.id },
     });
 
     const newUser = {
       userId: addUser.id,
       email: addUser.email,
-      role: role.name,
+      roles: roles,
     };
 
     return newUser;

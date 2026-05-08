@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 // interface for strict payload structure
 interface TokenPayload {
   userId: string;
-  role: string;
+  roles: string[];
 }
 
 const accessSecret = process.env.JWT_ACCESS_SECRET as string;
