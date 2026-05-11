@@ -7,5 +7,5 @@ export type User = {
 };
 
 export interface UserObject extends Request {
-  user: User;
+  user?: User;
 }
