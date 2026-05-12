@@ -1,17 +1,19 @@
 import type { Response } from "express";
 import { generateAccessToken, generateRefreshToken } from "./jwt";
-
+import { createHash } from "node:crypto";
+import prisma from "../config/db";
+import { parseExpiryToMs } from "./time";
 interface userObject {
   userId: string;
   email: string;
   roles: string[];
 }
 
-export const sendTokenResponse = (
+export async function sendTokenResponse(
   userObj: userObject,
   statusCode: number,
   res: Response,
-) => {
+) {
   //Token Generation
 
   // access
@@ -26,10 +28,23 @@ export const sendTokenResponse = (
     roles: userObj.roles,
   });
 
-  // Set cookie
+  // Save refresh token in db
+  const refreshExpiryStr = process.env.JWT_REFRESH_EXPIRY || "7d";
+  const expiryMs = parseExpiryToMs(refreshExpiryStr);
+  const expiryDate = new Date(Date.now() + expiryMs);
+  const tokenHash = createHash("sha256").update(refreshToken).digest("hex");
 
+  await prisma.refreshToken.create({
+    data: {
+      userId: userObj.userId,
+      tokenHash: tokenHash,
+      expiresAt: expiryDate,
+    },
+  });
+
+  // Set cookie
   res.cookie("refreshToken", refreshToken, {
-    maxAge: 7 * 24 * 60 * 60 * 1000,
+    maxAge: expiryMs,
     httpOnly: true,
     secure: true,
     sameSite: "strict",
@@ -43,4 +58,4 @@ export const sendTokenResponse = (
     },
     accessToken: accessToken,
   });
-};
+}

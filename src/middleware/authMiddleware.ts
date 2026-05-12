@@ -13,19 +13,17 @@ export async function protect(
     // Extract the token
     const authHeader = req.headers.authorization || "";
     if (!authHeader) {
-      return res.status(401).json({ error: "Unauthorized Access" });
+      return next(new AppError("Unauthorized Access", 401));
     }
     const token = authHeader.split(" ")[1];
     if (!token) {
-      return res.status(401).json({ error: "Unauthorized Access" });
+      return next(new AppError("Unauthorized Access", 401));
     }
 
     // verify token
     const accessSecret = process.env.JWT_ACCESS_SECRET;
     if (!accessSecret) {
-      return res
-        .status(500)
-        .json({ error: "JWT_ACCESS_SECRET is not configured" });
+      return next(new AppError("JWT_ACCESS_SECRET is not configured", 501));
     }
 
     let verifyToken: jwt.JwtPayload;
