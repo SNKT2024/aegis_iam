@@ -7,6 +7,7 @@ import cors from "cors";
 import { AppError } from "./utils/appError";
 import { globalErrorHandler } from "./middleware/errorMiddleware";
 import authRouter from "./routes/auth.routes";
+import userRouter from "./routes/user.routes";
 
 const app: Application = express();
 
@@ -33,6 +34,7 @@ app.get("/health", (req: Request, res: Response) => {
 });
 
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/users", userRouter);
 
 // 404 Route - Catch all undefined routes
 app.all("/*path", (req: Request, res: Response, next: NextFunction) => {

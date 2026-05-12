@@ -28,18 +28,18 @@ export async function protect(
         .json({ error: "JWT_ACCESS_SECRET is not configured" });
     }
 
-    const payload = jwt.verify(token, accessSecret) as
-      | jwt.JwtPayload
-      | { userId?: string; sub?: string; id?: string; email?: string };
+    let verifyToken: jwt.JwtPayload;
+    try {
+      verifyToken = jwt.verify(token, accessSecret) as jwt.JwtPayload;
+    } catch (verifyError) {
+      console.error("Token verification failed:", verifyError);
+      return next(new AppError("Invalid or expired token", 401));
+    }
 
-    // accept common claim names: `userId`, `sub`, or `id`
-    const userId = (payload &&
-      ((payload as any).userId ||
-        (payload as any).sub ||
-        (payload as any).id)) as string | undefined;
+    const userId = verifyToken.userId;
 
     if (!userId || typeof userId !== "string") {
-      return res.status(401).json({ error: "Invalid token payload" });
+      return next(new AppError("Invalid token payload", 401));
     }
 
     // Database check for user
@@ -68,7 +68,6 @@ export async function protect(
     };
 
     req.user = user;
-
     next();
   } catch (error) {
     next(error);

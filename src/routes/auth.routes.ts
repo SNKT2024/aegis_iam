@@ -5,6 +5,7 @@ import {
   userLoginSchema,
   userRegistrationSchema,
 } from "../schemas/userSchemas";
+import { protect } from "../middleware/authMiddleware";
 
 const authRouter = express.Router();
 
