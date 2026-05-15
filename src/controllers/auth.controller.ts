@@ -3,10 +3,8 @@ import { registerUser } from "../services/registerUser";
 import { userLogin } from "../services/loginUser";
 import { sendTokenResponse } from "../utils/sendTokens";
 import { AppError } from "../utils/appError";
-import jwt from "jsonwebtoken";
-import { createHash } from "node:crypto";
-import prisma from "../config/db";
 import { refreshSession } from "../services/refreshSession";
+import { userAllLogout, userLogout } from "../services/logoutUser";
 
 export async function register(
   req: Request,
@@ -51,4 +49,52 @@ export async function refresh(req: Request, res: Response, next: NextFunction) {
   const user = await refreshSession(refreshToken);
   // Re Issuance
   sendTokenResponse(user, 200, res);
+}
+
+export async function logout(req: Request, res: Response, next: NextFunction) {
+  try {
+    // Extract refresh token from cookie
+    const refreshToken = req.cookies.refreshToken;
+
+    if (refreshToken) {
+      await userLogout(refreshToken);
+    }
+
+    // Clear the cookie
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+    });
+
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function logoutAll(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      return next(new AppError("User not found", 404));
+    }
+
+    await userAllLogout(userId);
+
+    // Clear the cookie
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+    });
+
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    next(error);
+  }
 }

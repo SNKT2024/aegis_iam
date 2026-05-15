@@ -1,12 +1,17 @@
 import express, { type Request, type Response } from "express";
-import { login, refresh, register } from "../controllers/auth.controller";
+import {
+  login,
+  logout,
+  logoutAll,
+  refresh,
+  register,
+} from "../controllers/auth.controller";
 import { validateData } from "../middleware/validationMiddleware";
 import {
   userLoginSchema,
   userRegistrationSchema,
 } from "../schemas/userSchemas";
 import { protect } from "../middleware/authMiddleware";
-import { refreshSession } from "../services/refreshSession";
 
 const authRouter = express.Router();
 
@@ -17,6 +22,11 @@ authRouter.post("/register", validateData(userRegistrationSchema), register);
 authRouter.post("/login", validateData(userLoginSchema), login);
 
 //Refresh Route
-
 authRouter.post("/refresh", refresh);
+
+// logout Route
+authRouter.post("/logout", protect, logout);
+
+// logout all devices
+authRouter.post("/logout-all", protect, logoutAll);
 export default authRouter;
