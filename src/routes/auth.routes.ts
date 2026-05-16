@@ -1,5 +1,6 @@
 import express, { type Request, type Response } from "express";
 import {
+  forgotPassword,
   login,
   logout,
   logoutAll,
@@ -29,4 +30,7 @@ authRouter.post("/logout", protect, logout);
 
 // logout all devices
 authRouter.post("/logout-all", protect, logoutAll);
+
+// Reset password
+authRouter.post("/forgot-password", forgotPassword);
 export default authRouter;

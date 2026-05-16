@@ -5,6 +5,7 @@ import { sendTokenResponse } from "../utils/sendTokens";
 import { AppError } from "../utils/appError";
 import { refreshSession } from "../services/refreshSession";
 import { userAllLogout, userLogout } from "../services/logoutUser";
+import { generatePasswordResetToken } from "../services/resetPassword";
 
 export async function register(
   req: Request,
@@ -94,6 +95,33 @@ export async function logoutAll(
     });
 
     res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function forgotPassword(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    // Extract email
+    const { email } = req.body;
+    if (!email) {
+      return next(new AppError("Invalid credentials", 400));
+    }
+
+    // Genrate raw token
+    const rawToken = await generatePasswordResetToken(email);
+
+    const resetLink = `https://yourapp.com/reset-password?token=${rawToken}`;
+
+    res.status(200).json({
+      message:
+        "If an account with that email exists a reset link will be sent.",
+      resetLink,
+    });
   } catch (error) {
     next(error);
   }

@@ -23,6 +23,10 @@ model User {
   roles UserRole[]
   refreshTokens RefreshToken[]
 
+  // Updated Reset Token Fields
+  resetTokenHash String? @unique
+  resetTokenExpiry DateTime? 
+
   @@map("users")
 }
 
