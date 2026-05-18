@@ -33,4 +33,7 @@ authRouter.post("/logout-all", protect, logoutAll);
 
 // Reset password
 authRouter.post("/forgot-password", forgotPassword);
+
+// Update new password
+authRouter.patch("/reset-password/:token");
 export default authRouter;

@@ -6,6 +6,7 @@ import { AppError } from "../utils/appError";
 import { refreshSession } from "../services/refreshSession";
 import { userAllLogout, userLogout } from "../services/logoutUser";
 import { generatePasswordResetToken } from "../services/resetPassword";
+import { reserUserPassword } from "../services/resetUserPassword";
 
 export async function register(
   req: Request,
@@ -122,6 +123,26 @@ export async function forgotPassword(
         "If an account with that email exists a reset link will be sent.",
       resetLink,
     });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function resetPassword(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    // Raw Token
+    const rawToken = req.params.token;
+    if (!rawToken) {
+      return next(new AppError("Token invalid", 400));
+    }
+    // new password
+    const newPassword = req.body.password;
+
+    reserUserPassword(rawToken, newPassword);
   } catch (error) {
     next(error);
   }
