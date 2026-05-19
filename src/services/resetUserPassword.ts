@@ -2,8 +2,9 @@ import { createHash } from "node:crypto";
 import prisma from "../config/db";
 import { AppError } from "../utils/appError";
 import bcrypt from "bcrypt";
+import { userAllLogout } from "./logoutUser";
 
-export async function reserUserPassword(rawToken: string, newPassword: string) {
+export async function resetUserPassword(rawToken: string, newPassword: string) {
   // Hash incoming raw token
   const tokenHash = createHash("sha256").update(rawToken).digest("hex");
 
@@ -32,6 +33,8 @@ export async function reserUserPassword(rawToken: string, newPassword: string) {
   const salt = await bcrypt.genSalt(12);
   const hashPassword = await bcrypt.hash(newPassword, salt);
 
+  // Revoking all other sessions or other devices
+  await userAllLogout(findUser.id);
   // Nulling the credentials & Updating User in DB with new Password hash
 
   const updateUser = await prisma.user.update({

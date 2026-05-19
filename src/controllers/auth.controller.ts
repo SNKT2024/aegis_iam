@@ -6,7 +6,7 @@ import { AppError } from "../utils/appError";
 import { refreshSession } from "../services/refreshSession";
 import { userAllLogout, userLogout } from "../services/logoutUser";
 import { generatePasswordResetToken } from "../services/resetPassword";
-import { reserUserPassword } from "../services/resetUserPassword";
+import { resetUserPassword } from "../services/resetUserPassword";
 
 export async function register(
   req: Request,
@@ -128,8 +128,14 @@ export async function forgotPassword(
   }
 }
 
+// interface for params
+
+interface AuthRouteParams {
+  token: string;
+}
+
 export async function resetPassword(
-  req: Request,
+  req: Request<AuthRouteParams>,
   res: Response,
   next: NextFunction,
 ) {
@@ -142,7 +148,12 @@ export async function resetPassword(
     // new password
     const newPassword = req.body.password;
 
-    reserUserPassword(rawToken, newPassword);
+    // Reset Password
+    await resetUserPassword(rawToken, newPassword);
+
+    // Response
+
+    res.status(200).json({ message: "Password reset scuessfully" });
   } catch (error) {
     next(error);
   }

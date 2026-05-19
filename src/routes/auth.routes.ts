@@ -6,6 +6,7 @@ import {
   logoutAll,
   refresh,
   register,
+  resetPassword,
 } from "../controllers/auth.controller";
 import { validateData } from "../middleware/validationMiddleware";
 import {
@@ -35,5 +36,5 @@ authRouter.post("/logout-all", protect, logoutAll);
 authRouter.post("/forgot-password", forgotPassword);
 
 // Update new password
-authRouter.patch("/reset-password/:token");
+authRouter.patch("/reset-password/:token", resetPassword);
 export default authRouter;
