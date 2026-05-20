@@ -8,7 +8,9 @@ import { AppError } from "./utils/appError";
 import { globalErrorHandler } from "./middleware/errorMiddleware";
 import authRouter from "./routes/auth.routes";
 import userRouter from "./routes/user.routes";
+import { connectRedis } from "./config/redis";
 
+await connectRedis();
 const app: Application = express();
 
 // Essential security and utility middleware
@@ -22,7 +24,6 @@ app.use(
 app.use(morgan("dev")); //logs request to console
 app.use(express.json()); // json parser for payload
 app.use(cookieParser()); // parser for cookies for refresh tokens
-
 // Test Route to trigger an error
 app.get("/error-test", (req, res, next) => {
   next(new AppError("This is a custom error test!", 400));
