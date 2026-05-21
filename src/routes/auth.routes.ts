@@ -14,6 +14,7 @@ import {
   userRegistrationSchema,
 } from "../schemas/userSchemas";
 import { protect } from "../middleware/authMiddleware";
+import { blacklistToken } from "../utils/tokenBlacklist";
 
 const authRouter = express.Router();
 
@@ -27,14 +28,14 @@ authRouter.post("/login", validateData(userLoginSchema), login);
 authRouter.post("/refresh", refresh);
 
 // logout Route
-authRouter.post("/logout", protect, logout);
+authRouter.post("/logout", protect, blacklistToken, logout);
 
 // logout all devices
-authRouter.post("/logout-all", protect, logoutAll);
+authRouter.post("/logout-all", protect, blacklistToken, logoutAll);
 
 // Reset password
 authRouter.post("/forgot-password", forgotPassword);
 
 // Update new password
-authRouter.patch("/reset-password/:token", resetPassword);
+authRouter.patch("/reset-password/:token", blacklistToken, resetPassword);
 export default authRouter;

@@ -3,6 +3,7 @@ import type { UserObject } from "../types/express";
 import { AppError } from "../utils/appError";
 import jwt from "jsonwebtoken";
 import prisma from "../config/db";
+import { isTokenBlacklisted } from "../utils/tokenBlacklist";
 
 export async function protect(
   req: UserObject,
@@ -18,6 +19,11 @@ export async function protect(
     const token = authHeader.split(" ")[1];
     if (!token) {
       return next(new AppError("Unauthorized Access", 401));
+    }
+
+    const isRevoked = await isTokenBlacklisted(token);
+    if (!isRevoked) {
+      return next(new AppError("Token expired", 401));
     }
 
     // verify token
