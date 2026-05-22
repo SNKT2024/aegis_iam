@@ -7,6 +7,7 @@ import { refreshSession } from "../services/refreshSession";
 import { userAllLogout, userLogout } from "../services/logoutUser";
 import { generatePasswordResetToken } from "../services/resetPassword";
 import { resetUserPassword } from "../services/resetUserPassword";
+import { blacklistToken } from "../utils/tokenBlacklist";
 
 export async function register(
   req: Request,
@@ -58,8 +59,15 @@ export async function logout(req: Request, res: Response, next: NextFunction) {
     // Extract refresh token from cookie
     const refreshToken = req.cookies.refreshToken;
 
+    const authHeader = req.headers.authorization || "";
+    const accessToken = authHeader.split(" ")[1];
+
     if (refreshToken) {
       await userLogout(refreshToken);
+    }
+
+    if (accessToken) {
+      await blacklistToken(accessToken);
     }
 
     // Clear the cookie
@@ -84,6 +92,12 @@ export async function logoutAll(
     const userId = req.user?.userId;
     if (!userId) {
       return next(new AppError("User not found", 404));
+    }
+    const authHeader = req.headers.authorization || "";
+    const accessToken = authHeader.split(" ")[1];
+
+    if (accessToken) {
+      await blacklistToken(accessToken);
     }
 
     await userAllLogout(userId);
