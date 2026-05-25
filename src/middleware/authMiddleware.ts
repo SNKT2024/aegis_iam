@@ -22,7 +22,7 @@ export async function protect(
     }
 
     const isRevoked = await isTokenBlacklisted(token);
-    if (!isRevoked) {
+    if (isRevoked) {
       return next(new AppError("Token expired", 401));
     }
 

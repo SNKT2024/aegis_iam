@@ -28,7 +28,7 @@ authRouter.post("/login", validateData(userLoginSchema), login);
 authRouter.post("/refresh", refresh);
 
 // logout Route
-authRouter.post("/logout", protect, blacklistToken, logout);
+authRouter.post("/logout", protect, logout);
 
 // logout all devices
 authRouter.post("/logout-all", protect, blacklistToken, logoutAll);
