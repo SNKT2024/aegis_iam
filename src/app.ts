@@ -10,6 +10,9 @@ import authRouter from "./routes/auth.routes";
 import userRouter from "./routes/user.routes";
 import { connectRedis } from "./config/redis";
 
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./config/swagger";
+
 await connectRedis();
 const app: Application = express();
 
@@ -36,6 +39,14 @@ app.get("/health", (req: Request, res: Response) => {
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
+// Mount Swagger UI at /docs
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// Optional: Endpoint to view the raw OpenAPI JSON specification
+app.get("/docs.json", (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  res.send(swaggerSpec);
+});
 
 // 404 Route - Catch all undefined routes
 app.all("/*path", (req: Request, res: Response, next: NextFunction) => {
