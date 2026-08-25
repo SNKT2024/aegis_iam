@@ -1,5 +1,5 @@
 import swaggerJSDoc from "swagger-jsdoc";
-
+const isProduction = process.env.NODE_ENV === "production";
 const options: swaggerJSDoc.Options = {
   definition: {
     openapi: "3.0.0",
@@ -11,8 +11,10 @@ const options: swaggerJSDoc.Options = {
     },
     servers: [
       {
-        url: "http://localhost:5000",
-        description: "Development server",
+        url: isProduction
+          ? "https://aegis-iam-1.onrender.com" // Live Render server
+          : "http://localhost:5000", // Local dev server
+        description: isProduction ? "Production server" : "Local server",
       },
     ],
     components: {
